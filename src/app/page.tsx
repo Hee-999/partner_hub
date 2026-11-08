@@ -1,32 +1,64 @@
-import Link from "next/link";
+"use client";
+import { useState } from "react";
+import PricingSection, {
+  PARTNER_CATEGORIES,
+} from "@/components/ui/pricing-section";
+import { Award, Building2, Truck, Car, Droplets } from "lucide-react";
 
-export default function PartnerHubIndexPage() {
+const CATEGORY_TABS = [
+  { id: "moving", label: "포장이사·입주청소 (5곳)", icon: Truck },
+  { id: "biz", label: "자영업 정책자금·철거 (3곳)", icon: Building2 },
+  { id: "car", label: "장기렌트·리스·중고차 (4곳)", icon: Car },
+  { id: "living", label: "코웨이 정수기·가전 렌탈 (2곳)", icon: Droplets },
+];
+
+export default function PartnerHubHome() {
+  const [activeCategory, setActiveCategory] = useState<string>("moving");
+
   return (
-    <main className="max-w-3xl mx-auto px-4 py-16 text-center space-y-6">
-      <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-        2026 생활·정책 혜택 공식 비교 안내 센터
-      </h1>
-      <p className="text-slate-600 text-sm sm:text-base">
-        확인하실 분야를 선택해 주세요.
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left pt-4">
-        <Link href="/biz" className="p-5 bg-white rounded-2xl border border-slate-200 hover:border-amber-500 shadow-sm block">
-          <p className="font-extrabold text-slate-900">🏪 소상공인 철거·정책자금 비교</p>
-          <p className="text-xs text-slate-500 mt-1">무촌철거 · 철거스튜디오 · 사업자정책지원센터</p>
-        </Link>
-        <Link href="/moving" className="p-5 bg-white rounded-2xl border border-slate-200 hover:border-teal-500 shadow-sm block">
-          <p className="font-extrabold text-slate-900">🚚 포장이사 & 입주청소 비교</p>
-          <p className="text-xs text-slate-500 mt-1">다이사 · 포장이사24번가 · 모두이사 · 모두클린</p>
-        </Link>
-        <Link href="/car" className="p-5 bg-white rounded-2xl border border-slate-200 hover:border-blue-500 shadow-sm block">
-          <p className="font-extrabold text-slate-900">🚗 장기렌트·리스 & 중고차 비교</p>
-          <p className="text-xs text-slate-500 mt-1">린오토 · 리스렌트성지 · 카슐랭 · 중카TV</p>
-        </Link>
-        <Link href="/living" className="p-5 bg-white rounded-2xl border border-slate-200 hover:border-sky-500 shadow-sm block">
-          <p className="font-extrabold text-slate-900">💧 코웨이 정수기·가전 렌탈 비교</p>
-          <p className="text-xs text-slate-500 mt-1">코웨이 공식 렌탈 vs 특판몰 기획전</p>
-        </Link>
+    <div className="min-h-screen bg-neutral-100">
+      {/* Top Category Switcher Header */}
+      <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-neutral-200 px-4 py-3 shadow-xs">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2 font-extrabold text-gray-900 text-base">
+            <span className="h-8 w-8 rounded-xl bg-gradient-to-tr from-blue-600 to-blue-400 text-white grid place-content-center shadow-sm">
+              <Award size={18} />
+            </span>
+            <span>생활·비즈니스 공식 견적비교 센터</span>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-1.5">
+            {CATEGORY_TABS.map((cat) => {
+              const Icon = cat.icon;
+              const isSelected = activeCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                    isSelected
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "bg-neutral-100 text-gray-600 hover:bg-neutral-200 hover:text-gray-900"
+                  }`}
+                >
+                  <Icon size={15} />
+                  <span>{cat.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
-    </main>
+
+      {/* Render 21st.dev PricingSection for Selected Category */}
+      <PricingSection
+        key={activeCategory}
+        categorySlug={
+          PARTNER_CATEGORIES[activeCategory] ? activeCategory : "moving"
+        }
+        showCategoryNav={false}
+      />
+    </div>
   );
 }
