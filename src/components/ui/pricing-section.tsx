@@ -93,6 +93,29 @@ export default function PricingSection({
   const [selectedTab, setSelectedTab] = useState("all");
   const pricingRef = useRef<HTMLDivElement>(null);
 
+  const handleCpaClick = (categoryTitle: string, planName: string, planUrl: string) => {
+    try {
+      const payload = JSON.stringify({
+        category: categoryTitle,
+        planName,
+        planUrl,
+        referrer: typeof document !== "undefined" ? document.referrer : "",
+      });
+      if (typeof navigator !== "undefined" && navigator.sendBeacon) {
+        navigator.sendBeacon("/api/track", payload);
+      } else {
+        fetch("/api/track", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload,
+          keepalive: true,
+        }).catch(() => {});
+      }
+    } catch {
+      // ignore
+    }
+  };
+
   const filteredPlans =
     selectedTab === "all"
       ? config.plans
@@ -272,6 +295,7 @@ export default function PricingSection({
                       href={plan.url}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() => handleCpaClick(config.navLabel, plan.name, plan.url)}
                       className={`w-full mb-5 py-3.5 px-4 text-base sm:text-lg font-bold rounded-xl flex items-center justify-center gap-2 transition-all duration-200 ${
                         plan.popular
                           ? "bg-gradient-to-t from-blue-600 to-blue-500 shadow-lg shadow-blue-500/30 border border-blue-400 text-white hover:brightness-105"
